@@ -26,7 +26,7 @@ body {
     position: relative;
     padding: 20px;
     width: 100%;
-    z-index: 2;
+    max-width: 100%;
 }
 
 h1 { font-size: clamp(1.8em, 5vw, 2.6em); }
@@ -65,7 +65,10 @@ button {
     75% { transform: translate(6px, 6px); }
     100% { transform: translate(0px, 0px); }
 }
-.shake { animation: shake 0.4s ease; }
+
+.shake {
+    animation: shake 0.4s ease;
+}
 
 #tease {
     margin-top: 15px;
@@ -81,19 +84,18 @@ button {
     color: #ffd6ff;
 }
 
-/* IMAGE STYLING */
-#finalImage {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 1.5s ease;
-    z-index: 1;
+.heart {
+    position: absolute;
+    bottom: -40px;
+    animation: floatUp linear infinite;
+    opacity: 0.9;
 }
 
-/* Flash */
+@keyframes floatUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-120vh); opacity: 0; }
+}
+
 .flash {
     position: fixed;
     inset: 0;
@@ -102,7 +104,10 @@ button {
     pointer-events: none;
     z-index: 9999;
 }
-.flash.active { animation: flash 0.6s ease; }
+
+.flash.active {
+    animation: flash 0.6s ease;
+}
 
 @keyframes flash {
     0% { opacity: 0; }
@@ -113,8 +118,6 @@ button {
 </head>
 
 <body>
-
-<img id="finalImage" src="photo.jpg" alt="Us ❤️">
 
 <div class="container">
     <h1>Rishu.... will you be Harshu's Valentine? 💜💙</h1>
@@ -142,7 +145,6 @@ const yesBtn = document.getElementById("yesBtn");
 const teaseEl = document.getElementById("tease");
 const messageEl = document.getElementById("message");
 const flashEl = document.getElementById("flash");
-const finalImage = document.getElementById("finalImage");
 
 let yesScale = 1;
 let teaseIndex = 0;
@@ -175,18 +177,42 @@ noBtn.addEventListener("click", () => {
     const btnWidth = noBtn.offsetWidth;
     const btnHeight = noBtn.offsetHeight;
 
-    const maxX = VIEW_WIDTH - btnWidth - 20;
-    const maxY = VIEW_HEIGHT - btnHeight - 20;
+    const safePadding = 20;
 
-    noBtn.style.left = Math.random() * maxX + "px";
-    noBtn.style.top = Math.random() * maxY + "px";
+    const maxX = VIEW_WIDTH - btnWidth - safePadding;
+    const maxY = VIEW_HEIGHT - btnHeight - safePadding;
+
+    let randomX, randomY;
+    let attempts = 0;
+
+    do {
+        randomX = Math.random() * maxX;
+        randomY = Math.random() * maxY;
+        attempts++;
+        if (attempts > 60) break;
+    } while (isOverlapping(randomX, randomY, btnWidth, btnHeight));
+
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
 
     yesScale += 0.15;
     yesBtn.style.transform = `scale(${yesScale})`;
 });
 
+function isOverlapping(x, y, width, height) {
+    const yesRect = yesBtn.getBoundingClientRect();
+
+    return !(
+        x + width < yesRect.left ||
+        x > yesRect.right ||
+        y + height < yesRect.top ||
+        y > yesRect.bottom
+    );
+}
+
 yesBtn.addEventListener("click", () => {
 
+    /* ✅ ADDED VIBRATION */
     if (navigator.vibrate) {
         navigator.vibrate([300, 100, 300, 100, 500]);
     }
@@ -200,13 +226,23 @@ yesBtn.addEventListener("click", () => {
     flashEl.classList.add("active");
     setTimeout(() => flashEl.classList.remove("active"), 600);
 
-    messageEl.style.display = "block";
+    for (let i = 0; i < 70; i++) {
+        setTimeout(createHeart, i * 25);
+    }
 
-    // Wait 7 seconds before showing image
-    setTimeout(() => {
-        finalImage.style.opacity = "1";
-    }, 7000);
+    messageEl.style.display = "block";
 });
+
+function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = Math.random() > 0.5 ? "💙" : "💜";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.fontSize = (18 + Math.random() * 26) + "px";
+    heart.style.animationDuration = (3 + Math.random() * 4) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 8000);
+}
 </script>
 
 </body>
