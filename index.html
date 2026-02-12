@@ -26,6 +26,7 @@ body {
     position: relative;
     padding: 20px;
     width: 100%;
+    z-index: 2;
 }
 
 h1 { font-size: clamp(1.8em, 5vw, 2.6em); }
@@ -41,7 +42,6 @@ button {
     margin: 10px;
 }
 
-/* YES BUTTON */
 #yesBtn {
     background-color: #ff4d6d;
     color: white;
@@ -49,7 +49,6 @@ button {
     z-index: 1;
 }
 
-/* NO BUTTON */
 #noBtn {
     background-color: #5a189a;
     color: white;
@@ -59,7 +58,6 @@ button {
     z-index: 10;
 }
 
-/* Shake */
 @keyframes shake {
     0% { transform: translate(0px, 0px); }
     25% { transform: translate(6px, -6px); }
@@ -83,15 +81,16 @@ button {
     color: #ffd6ff;
 }
 
-/* FULLSCREEN IMAGE */
+/* IMAGE STYLING */
 #finalImage {
-    display: none;
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 5;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    z-index: 1;
 }
 
 /* Flash */
@@ -127,7 +126,11 @@ button {
     <div id="tease"></div>
 
     <div id="message">
-        💖 SHE SAID YES 💖
+        💖 SHE SAID YES 💖<br><br>
+        Rishuuuuuudiiiii you just made this the best Valentines ever 😘  
+        Can't wait to give you dher saari pappisss 😁😘
+        <br><br>
+        (Favourite moment! 💙😁💜 PS. this reaction is going as a reel 🙈)
     </div>
 </div>
 
@@ -156,7 +159,6 @@ const teases = [
 "Haave toh maani ja pleaseee🥺🥺💙💙💜💜"
 ];
 
-/* NO CLICK */
 noBtn.addEventListener("click", () => {
 
     if (navigator.vibrate) navigator.vibrate(200);
@@ -176,20 +178,15 @@ noBtn.addEventListener("click", () => {
     const maxX = VIEW_WIDTH - btnWidth - 20;
     const maxY = VIEW_HEIGHT - btnHeight - 20;
 
-    let randomX = Math.random() * maxX;
-    let randomY = Math.random() * maxY;
-
-    noBtn.style.left = randomX + "px";
-    noBtn.style.top = randomY + "px";
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
 
     yesScale += 0.15;
     yesBtn.style.transform = `scale(${yesScale})`;
 });
 
-/* YES CLICK */
 yesBtn.addEventListener("click", () => {
 
-    // Strong vibration pattern
     if (navigator.vibrate) {
         navigator.vibrate([300, 100, 300, 100, 500]);
     }
@@ -205,10 +202,10 @@ yesBtn.addEventListener("click", () => {
 
     messageEl.style.display = "block";
 
-    // Show image
+    // Wait 7 seconds before showing image
     setTimeout(() => {
-        finalImage.style.display = "block";
-    }, 500);
+        finalImage.style.opacity = "1";
+    }, 7000);
 });
 </script>
 
